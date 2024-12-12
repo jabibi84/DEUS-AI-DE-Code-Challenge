@@ -24,3 +24,19 @@ def check_missing_values(df: DataFrame, column: str) -> int:
     except Exception as e:
         logger.error(f"Application encountered an error: {e}")
 
+
+def check_data_format_inconsistencies(df: DataFrame, column: str, expected_type: str) -> int:
+    """
+    Checks for inconsistencies in the data format of a column.
+
+    Args:
+        df (DataFrame): The Spark DataFrame.
+        column (str): The name of the column to check.
+        expected_type (str): The expected Spark data type (e.g., "int", "string").
+
+    Returns:
+        int: The count of inconsistent rows.
+    """
+    inconsistent_count = df.filter(~col(column).cast(expected_type).isNotNull()).count()
+    logger.info(f"Column '{column}' has {inconsistent_count} inconsistent rows (not {expected_type}).")
+    return inconsistent_count
