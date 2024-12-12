@@ -53,3 +53,27 @@ def check_data_format(
         return inconsistent_count
     except Exception as e:
         logger.error(f"Application encountered an error: {e}")
+
+
+def check_duplicates_by_column(df_name: str, df: DataFrame, column: str) -> int:
+    """
+    Identifies duplicates in the DataFrame based on a specific column.
+
+    Args:
+        df (DataFrame): Input DataFrame.
+        column (str): The column to check for duplicates.
+
+    Returns:
+        int: Count of duplicate rows based on the specified column.
+    """
+    logger.info(f"Checking Duplicate Values on {df_name} - {column}")
+    try:
+        duplicate_count = df.count() - df.select(column).distinct().count()
+        if duplicate_count > 0:
+            logger.info(
+                f"DataFrame: {df_name} Column '{column}' has {duplicate_count} duplicate rows."
+            )
+        return duplicate_count
+
+    except Exception as e:
+        logger.error(f"Application encountered an error: {e}")
