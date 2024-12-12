@@ -8,6 +8,7 @@ from src.utils import get_logger
 
 logger = get_logger(__name__)
 
+
 def main():
     logger.info("Starting the application...")
     try:
@@ -16,13 +17,13 @@ def main():
         ).getOrCreate()
         logger.info("SparkSession initialized.")
 
-        sales_df = load_data(spark, "/app/data/input/sales_uuid.csv")
+        sales_df = load_data(spark, "/app/data/sales_uuid.csv")
         logger.info("sales.csv Loaded Success..")
 
-        products_df = load_data(spark, "/app/data/input/products_uuid.csv")
+        products_df = load_data(spark, "/app/data/products_uuid.csv")
         logger.info("Products.csv Loaded Success..")
 
-        stores_df = load_data(spark, "/app/data/input/stores_uuid.csv")
+        stores_df = load_data(spark, "/app/data/stores_uuid.csv")
         logger.info("stores.csv Loaded Success..")
 
     except Exception as e:
