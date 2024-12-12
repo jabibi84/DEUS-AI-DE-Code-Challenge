@@ -1,5 +1,5 @@
 from pyspark.sql import DataFrame
-from pyspark.sql.functions import col, when
+from pyspark.sql.functions import to_date, coalesce, col, lit, when
 
 
 # Define the categorization function
