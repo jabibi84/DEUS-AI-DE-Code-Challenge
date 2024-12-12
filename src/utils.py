@@ -29,7 +29,7 @@ def get_logger(name: str) -> logging.Logger:
     return logger
 
 
-def get_dtype(df,colname):
+def get_dtype(df, colname):
     return [dtype for name, dtype in df.dtypes if name == colname][0]
 
 
@@ -48,7 +48,7 @@ def get_config(file_path: str) -> dict:
     """
     logger.info("Getting Dataset configuration.")
     try:
-        with open(file_path, 'r') as file:
+        with open(file_path, "r") as file:
             config = json.load(file)
         logger.info("Configuration File loaded successfully.")
         return config

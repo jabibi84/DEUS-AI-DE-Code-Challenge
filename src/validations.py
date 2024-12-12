@@ -18,14 +18,18 @@ def check_missing_values(df_name: str, df: DataFrame, column: str) -> int:
     """
     try:
         missing_count = df.filter(col(column).isNull()).count()
-        logger.info(f"Dataframe: {df_name} Column '{column}' has {missing_count} missing or null values.")
+        logger.info(
+            f"Dataframe: {df_name} Column: '{column}' has {missing_count} missing/null values."
+        )
         return missing_count
 
     except Exception as e:
         logger.error(f"Application encountered an error: {e}")
 
 
-def check_data_format_inconsistencies(df_name: str, df: DataFrame, column: str, expected_type: str) -> int:
+def check_data_format_inconsistencies(
+    df_name: str, df: DataFrame, column: str, expected_type: str
+) -> int:
     """
     Checks for inconsistencies in the data format of a column.
 
@@ -38,8 +42,12 @@ def check_data_format_inconsistencies(df_name: str, df: DataFrame, column: str, 
         int: The count of inconsistent rows.
     """
     try:
-        inconsistent_count = df.filter(~col(column).cast(expected_type).isNotNull()).count()
-        logger.info(f"DataFrame: {df_name} Column '{column}' has {inconsistent_count} inconsistent rows (not {expected_type}).")
+        inconsistent_count = df.filter(
+            ~col(column).cast(expected_type).isNotNull()
+        ).count()
+        logger.info(
+            f"DataFrame: {df_name} Column '{column}' has {inconsistent_count} inconsistent rows (not {expected_type})."
+        )
         return inconsistent_count
     except Exception as e:
         logger.error(f"Application encountered an error: {e}")
