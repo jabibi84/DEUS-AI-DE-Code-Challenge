@@ -57,24 +57,37 @@ def check_data_format(
         logger.error(f"Application encountered an error: {e}")
 
 
-def check_duplicates_by_column(df_name: str, df: DataFrame, column: str) -> int:
+def check_duplicates(df_name: str, df: DataFrame, column: str = None) -> int:
     """
-    Identifies duplicates in the DataFrame based on a specific column.
+    Identifies duplicates in the DataFrame. If a column is specified, it checks for duplicates
+    based on that column. Otherwise, it checks for duplicates across the entire DataFrame.
 
     Args:
+        df_name (str): Name of the DataFrame.
         df (DataFrame): Input DataFrame.
-        column (str): The column to check for duplicates.
+        column (str, optional): The column to check for duplicates. Defaults to None.
 
     Returns:
-        int: Count of duplicate rows based on the specified column.
+        int: Count of duplicate rows.
     """
     try:
-        duplicate_count = df.count() - df.select(column).distinct().count()
-        if duplicate_count > 0:
-            logger.info(
-                f"DataFrame: {df_name} Column '{column}' has {duplicate_count} duplicate rows."
-            )
+        if column:
+            logger.info(f"Checking Duplicate Values on {df_name} - Column: {column}")
+            duplicate_count = df.count() - df.select(column).distinct().count()
+            if duplicate_count > 0:
+                logger.info(
+                    f"DataFrame: {df_name} Column '{column}' has {duplicate_count} duplicate rows."
+                )
+        else:
+            logger.info(f"Checking Duplicate Values on {df_name} - Entire DataFrame")
+            duplicate_count = df.count() - df.distinct().count()
+            if duplicate_count > 0:
+                logger.info(
+                    f"DataFrame: {df_name} has {duplicate_count} duplicate rows across all columns."
+                )
+
         return duplicate_count
 
     except Exception as e:
         logger.error(f"Application encountered an error: {e}")
+
