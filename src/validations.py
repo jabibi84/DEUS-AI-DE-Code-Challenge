@@ -16,7 +16,7 @@ def check_missing_values(df_name: str, df: DataFrame, column: str) -> int:
     Returns:
         int: The count of missing or null values in the column.
     """
-    logger.info(f"Checking missing Values on {df_name} - {column}")
+    logger.info(f" on {df_name} - {column}")
     try:
         missing_count = df.filter(col(column).isNull()).count()
         if missing_count > 0:
@@ -43,7 +43,7 @@ def check_data_format(
     Returns:
         int: The count of inconsistent rows.
     """
-    logger.info(f"Checking data format on {df_name} - {column}")
+    logger.info(f" on {df_name} - {column}")
     try:
         inconsistent_count = df.filter(
             ~col(column).cast(expected_type).isNotNull()
@@ -79,7 +79,7 @@ def check_duplicates(df_name: str, df: DataFrame, column: str = None) -> int:
                     f"DataFrame: {df_name} Column '{column}' has {duplicate_count} duplicate rows."
                 )
         else:
-            logger.info(f"Checking Duplicate Values on {df_name} - Entire DataFrame")
+            logger.info(f" Values on {df_name} - Entire DataFrame")
             duplicate_count = df.count() - df.distinct().count()
             if duplicate_count > 0:
                 logger.info(
