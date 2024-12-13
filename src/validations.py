@@ -72,7 +72,7 @@ def check_duplicates(df_name: str, df: DataFrame, column: str = None) -> int:
     """
     try:
         if column:
-            logger.info(f"Checking Duplicate Values on {df_name} - Column: {column}")
+            logger.info(f" Values on {df_name} - Column: {column}")
             duplicate_count = df.count() - df.select(column).distinct().count()
             if duplicate_count > 0:
                 logger.info(
@@ -90,4 +90,3 @@ def check_duplicates(df_name: str, df: DataFrame, column: str = None) -> int:
 
     except Exception as e:
         logger.error(f"Application encountered an error: {e}")
-
