@@ -2,7 +2,7 @@
   "datasets": [
     {
       "name": "SalesTransactions",
-      "file": "data/sales_uuid.csv",
+      "file": "data/input/sales_uuid.csv",
       "columns": [
         {
           "name": "transaction_id",
@@ -38,7 +38,7 @@
     },
     {
       "name": "Products",
-      "file": "data/products_uuid.csv",
+      "file": "data/input/products_uuid.csv",
       "columns": [
         {
           "name": "product_id",
@@ -60,7 +60,7 @@
     },
     {
       "name": "Stores",
-      "file": "data/stores_uuid.csv",
+      "file": "data/input/stores_uuid.csv",
       "columns": [
         {
           "name": "store_id",
