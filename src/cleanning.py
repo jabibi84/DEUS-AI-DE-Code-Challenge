@@ -1,5 +1,6 @@
 from pyspark.sql import DataFrame
 from pyspark.sql.functions import to_date, coalesce, col, lit, when
+from pyspark.sql.types import StructType
 
 
 def standardize_date_format(
@@ -58,3 +59,26 @@ def drop_duplicates_by_column(df: DataFrame, column: str) -> DataFrame:
         raise ValueError(f"Column '{column}' does not exist in the DataFrame.")
 
     return df.dropDuplicates([column])
+
+
+def enforce_dataframe_schema(
+    df_name: str, df: DataFrame, schema: StructType
+) -> DataFrame:
+    """
+    Fuerza los tipos de datos de un DataFrame de Spark al esquema proporcionado.
+
+    Args:
+        df (DataFrame): DataFrame de Spark a transformar.
+        schema (StructType): Esquema de Spark que define los tipos de datos deseados.
+
+    Returns:
+        DataFrame: DataFrame con los tipos de datos ajustados.
+    """
+    for field in schema.fields:
+        if field.name not in df.columns:
+            raise ValueError(f"La columna '{field.name}' no existe en el DataFrame.")
+
+    casted_df = df.select(
+        *[df[col.name].cast(col.dataType).alias(col.name) for col in schema.fields]
+    )
+    return casted_df
