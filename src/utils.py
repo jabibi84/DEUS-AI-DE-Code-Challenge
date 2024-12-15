@@ -30,8 +30,37 @@ def get_logger(name: str) -> logging.Logger:
     return logger
 
 
-def get_dtype(df, colname):
-    return [dtype for name, dtype in df.dtypes if name == colname][0]
+def get_dtype(df: DataFrame, colname: str) -> str:
+    """
+    Get the data type of a specific column from a Spark DataFrame.
+
+    Args:
+        df (DataFrame): The Spark DataFrame.
+        colname (str): Name of the column in the DataFrame.
+
+    Returns:
+        str: The data type of the specified column.
+
+    Raises:
+        TypeError: If the input DataFrame is not a Spark DataFrame or colname is not a string.
+        ValueError: If the specified column name does not exist in the DataFrame.
+    """
+    # Validate input types
+    if not isinstance(df, DataFrame):
+        raise TypeError("The 'df' parameter must be a Spark DataFrame.")
+    if not isinstance(colname, str):
+        raise TypeError("The 'colname' parameter must be a string.")
+
+    # Check if column exists
+    if colname not in df.columns:
+        raise ValueError(f"Column '{colname}' does not exist in the DataFrame. Available columns: {df.columns}")
+
+    # Get the data type of the column
+    try:
+        return [dtype for name, dtype in df.dtypes if name == colname][0]
+    except IndexError:
+        # This shouldn't happen due to the prior column existence check, but included for safety.
+        raise ValueError(f"Unexpected error: Column '{colname}' could not be found in the DataFrame.")
 
 
 logger = get_logger(__name__)
