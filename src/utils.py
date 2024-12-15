@@ -1,5 +1,6 @@
 import logging
 import json
+from pyspark.sql import DataFrame
 
 
 def get_logger(name: str) -> logging.Logger:
@@ -91,3 +92,38 @@ def get_config(file_path: str) -> dict:
         raise
     except Exception as e:
         logger.error(f"Error: Failed to decode JSON. {e}")
+
+
+def write_dataframe(
+    df, output_path, format="parquet", partition_by=None, mode="overwrite", header=True
+):
+    """
+    Function to write a PySpark DataFrame in Parquet or CSV format with optional partitioning.
+
+    Args:
+        df (DataFrame): The PySpark DataFrame to be written.
+        output_path (str): The path where the file will be saved.
+        format (str): Output format. Options: "parquet", "csv". Default: "parquet".
+        partition_by (list): List of columns to partition the data by. Default: None.
+        mode (str): Write mode. Options: "overwrite", "append", "ignore", "error". Default: "overwrite".
+        header (bool): If True, includes a header in CSV files. Default: True (only applies to CSV).
+    """
+    if format not in {"parquet", "csv"}:
+        logger.error(f"Unsupported format '{format}'. Use 'parquet' or 'csv'.")
+        raise ValueError(f"Unsupported format '{format}'. Use 'parquet' or 'csv'.")
+
+    writer = df.write.mode(mode)
+
+    if partition_by:
+        writer = writer.partitionBy(*partition_by)
+
+    try:
+        if format == "csv":
+            writer.option("header", header).csv(output_path)
+        elif format == "parquet":
+            writer.parquet(output_path)
+
+        logger.info(f"DataFrame written in {format} format to: {output_path}")
+    except Exception as e:
+        logger.error(f"Failed to write DataFrame in {format} format. Error: {e}")
+        raise
