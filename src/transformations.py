@@ -87,13 +87,32 @@ def enrich_data(
     return enriched_data
 
 
-# Define the categorization function
 def categorize_price(price):
+    """
+    Categorize a price into "Low", "Medium", or "High" categories based on its value.
+
+    Args:
+        price (float or int): The price to be categorized.
+
+    Returns:
+        str: The category of the price. Options are:
+            - "Low" for prices less than 20.
+            - "Medium" for prices between 20 and 100 (inclusive).
+            - "High" for prices greater than 100.
+
+    Raises:
+        TypeError: If the input is not a number (float or int).
+        ValueError: If the input is a negative value.
+    """
+    if not isinstance(price, (int, float)):
+        raise TypeError(f"Invalid type: {type(price)}. The price must be a number (int or float).")
+
+    if price < 0:
+        raise ValueError("Price cannot be negative.")
+
     if price < 20:
         return "Low"
     elif 20 <= price <= 100:
         return "Medium"
     elif price > 100:
         return "High"
-    else:
-        return None
