@@ -4,7 +4,8 @@ import json
 
 def get_logger(name: str) -> logging.Logger:
     """
-    Configures and returns a logger.
+    Configures and returns a logger to write messages during
+    execution tim.
 
     Args:
         name (str): The name of the logger.
