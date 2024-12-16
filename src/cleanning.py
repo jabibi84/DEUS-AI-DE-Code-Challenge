@@ -1,8 +1,8 @@
 from pyspark.sql import DataFrame
-from pyspark.sql.functions import to_date, coalesce, col, lit, when
+from pyspark.sql.functions import coalesce, col, to_date
 from pyspark.sql.types import StructType
-from src.utils import get_logger
 
+from src.utils import get_logger
 
 logger = get_logger(__name__)
 
@@ -94,3 +94,5 @@ def enforce_dataframe_schema(
         *[df[col.name].cast(col.dataType).alias(col.name) for col in schema.fields]
     )
     return casted_df
+
+
