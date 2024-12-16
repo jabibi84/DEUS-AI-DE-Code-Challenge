@@ -1,8 +1,7 @@
 import json
 import logging
-import json
+
 from pyspark.sql import DataFrame
-import os
 
 
 def get_logger(name: str, level: str = "INFO") -> logging.Logger:
