@@ -2,9 +2,9 @@ name: CI/CD Pipeline
 
 on:
   push:
-    branches: [DE-jlondono]
+    branches: [main]
   pull_request:
-    branches: [DE-jlondono]
+    branches: [main]
 
 jobs:
   lint-and-format:
