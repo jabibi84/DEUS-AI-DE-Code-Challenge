@@ -1,6 +1,10 @@
 from pyspark.sql import DataFrame
 from pyspark.sql.functions import to_date, coalesce, col, lit, when
 from pyspark.sql.types import StructType
+from src.utils import get_logger
+
+
+logger = get_logger(__name__)
 
 
 def standardize_date_format(
@@ -43,22 +47,30 @@ def standardize_date_format(
     return df.withColumn(output_column, standardized_date)
 
 
-def drop_duplicates_by_column(df: DataFrame, column: str) -> DataFrame:
+def drop_duplicates(df: DataFrame, column: str = None) -> DataFrame:
     """
-    Removes duplicate rows based on a specific column in the DataFrame.
+    Removes duplicate rows from the DataFrame. If a column is specified, duplicates
+    are removed based on that column; otherwise, duplicates are removed across all columns.
 
     Args:
         df (DataFrame): Input Spark DataFrame.
-        column (str): The column to check for duplicates.
+        column (str, optional): The column to check for duplicates. If None, checks all columns.
 
     Returns:
-        DataFrame: A new DataFrame with duplicates removed based on the specified column.
+        DataFrame: A new DataFrame with duplicates removed.
+
+    Raises:
+        ValueError: If the specified column does not exist in the DataFrame.
     """
-
-    if column not in df.columns:
-        raise ValueError(f"Column '{column}' does not exist in the DataFrame.")
-
-    return df.dropDuplicates([column])
+    if column:
+        if column not in df.columns:
+            logger.error(f"Column '{column}' does not exist in the DataFrame.")
+            raise ValueError(f"Column '{column}' does not exist in the DataFrame.")
+        logger.info(f"Removing duplicates based on column: '{column}'")
+        return df.dropDuplicates([column])
+    else:
+        logger.info("Removing duplicates across all columns.")
+        return df.dropDuplicates()
 
 
 def enforce_dataframe_schema(
