@@ -52,6 +52,37 @@ def get_logger(name: str, level: str = "INFO") -> logging.Logger:
     return logger
 
 
+def get_config(file_path: str) -> dict:
+    """
+    Reads a configuration file in JSON format and parses it into a dictionary.
+
+    Args:
+        file_path (str): Path to the JSON configuration file.
+
+    Returns:
+        dict: Parsed configuration as a dictionary.
+
+    Raises:
+        FileNotFoundError: If the file is not found at the specified path.
+        json.JSONDecodeError: If the file contains invalid JSON.
+        Exception: For any other unexpected errors.
+    """
+    try:
+        with open(file_path, "r") as file:
+            config = json.load(file)
+        return config
+
+    except FileNotFoundError:
+        raise FileNotFoundError(f"Error: Configuration file not found at {file_path}")
+    except json.JSONDecodeError as e:
+        raise json.JSONDecodeError(f"Error: Failed to decode JSON. {e}", file_path, 0)
+    except Exception as e:
+        raise Exception(f"Unexpected error: {e}")
+
+
+logger = get_logger(__name__)
+
+
 def get_dtype(df: DataFrame, colname: str) -> str:
     """
     Get the data type of a specific column from a Spark DataFrame.
