@@ -1,4 +1,4 @@
-from pyspark.sql.types import StructType, StructField, StringType, FloatType, DateType
+from pyspark.sql.types import DateType, FloatType, StringType, StructField, StructType
 
 
 class SchemaManager:
