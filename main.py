@@ -1,30 +1,28 @@
 import sys
 
-# Modificar sys.path antes de cualquier importación
 sys.path.append("./src")  # noqa: E402
 
-from pyspark.sql import SparkSession
-from pyspark.sql.functions import udf
-from pyspark.sql.types import FloatType, StringType
+from pyspark.sql import SparkSession  # noqa: E402
+from pyspark.sql.functions import udf  # noqa: E402
+from pyspark.sql.types import FloatType, StringType  # noqa: E402
 
 # Importar módulos desde el directorio "src"
-from src.cleanning import (
+from src.cleanning import (  # noqa: E402
     drop_duplicates,
     enforce_dataframe_schema,
     remove_duplicates_by_column,
     standardize_date_format,
 )
-from src.proccesing import load_csv
-from src.SparkSchemas import SchemaManager
-from src.transformations import (
+from src.proccesing import load_csv  # noqa: E402
+from src.SparkSchemas import SchemaManager  # noqa: E402
+from src.transformations import (  # noqa: E402
     calculate_monthly_sales,
     calculate_total_revenue,
     categorize_price,
     enrich_data,
 )
-from src.utils import get_config, get_logger, write_dataframe
-from src.validations import check_duplicates
-
+from src.utils import get_config, get_logger, write_dataframe  # noqa: E402
+from src.validations import check_duplicates  # noqa: E402
 
 logger = get_logger(__name__)
 
@@ -76,7 +74,7 @@ def main():
 
         # Fixing inconsistences data format - Data Cleaning
         df_transactions = standardize_date_format(
-            df_SalesTransactions, "transaction_date"
+            df_SalesTransactions, "transaction_date"  # noqa: F821
         ).drop("transaction_date")
 
         df_transactions = df_transactions.withColumnRenamed(
@@ -96,15 +94,15 @@ def main():
             SchemaManager.get_schema("SalesTransactions"),
         )
         df_Products_clean = enforce_dataframe_schema(
-            "Products", df_Products, SchemaManager.get_schema("Products")
+            "Products", df_Products, SchemaManager.get_schema("Products")  # noqa: F821
         )
         df_Stores_clean = enforce_dataframe_schema(
-            "Stores", df_Stores, SchemaManager.get_schema("Stores")
+            "Stores", df_Stores, SchemaManager.get_schema("Stores")  # noqa: F821
         )
 
         # transformations
         df_revenue = calculate_total_revenue(df_transactions, df_Products_clean)
-        df_monthly_sales = calculate_monthly_sales(df_transactions, df_Products_clean)
+        df_monthly_sales = calculate_monthly_sales(df_transactions, df_Products_clean)  # noqa: F821
         df_enrich = enrich_data(df_transactions, df_Products_clean, df_Stores_clean)
 
         # output
@@ -113,6 +111,13 @@ def main():
             output_path="data/output/sales_product_store",
             format="parquet",
             partition_by=["category", "transaction_date"],
+            mode="overwrite",
+        )
+
+        write_dataframe(
+            df=df_monthly_sales,
+            output_path="data/output/df_monthly_sales",
+            format="parquet",
             mode="overwrite",
         )
 
