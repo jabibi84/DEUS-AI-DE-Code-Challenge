@@ -116,4 +116,6 @@ Primary approach can be broken down into the following key steps:
 5. **Build the Docker Compose:**
    ```bash
    docker compose up --build
+    ```
+Once the container el running it will submit a spark job with the code of solution, its because local folder code are mapping within container, so you can make any change in data files or code and run docker compose command and it will take those new changes during executions. 
 
