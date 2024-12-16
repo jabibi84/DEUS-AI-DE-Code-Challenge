@@ -86,15 +86,30 @@ My primary approach can be broken down into the following key steps:
    ```bash
    docker compose up --build
 
-4. **Create Python Environment to run local Plint
-    ```bash
-   python3 -m venv 
+3. **Create new python enviroment 
+    ```` 
+    python -m venv env
+    ````
 
-5. **Activate Python Environment
-    ```bash 
-   source ./env/bin/activate
+    3.1. **Activate new python environment: 
 
-6. **Install Python Packages  
+    Windows
+    ```
+    .\env\scripts\activate
+    ```
+
+    MacOS & Linux
+    ```
+    source ./env/bin/activate
+    ```
+
+4. **Configure githook to run test code before each commit 
+
+    ```
+    cp ./git-hook/* ./.git/hooks/
+    ```
+
+5. **Install Python Packages  
     ```bash 
    pip install -r ./requirements.txt
    ```
