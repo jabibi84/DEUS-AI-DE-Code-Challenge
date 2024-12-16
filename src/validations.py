@@ -1,10 +1,43 @@
-from src.utils import get_logger
 from pyspark.sql import DataFrame
 from pyspark.sql.functions import col
-from src.utils import get_config, get_logger
+from pyspark.sql.types import StructType
 
+from src.utils import get_logger
 
 logger = get_logger(__name__)
+
+
+def validate_schema(df: DataFrame, expected_schema: StructType) -> bool:
+    """
+    Validates if the DataFrame's schema matches the expected schema.
+
+    Args:
+        df (DataFrame): The PySpark DataFrame to validate.
+        expected_schema (StructType): The expected schema to validate against.
+
+    Returns:
+        bool: True if the DataFrame schema matches the expected schema, False otherwise.
+
+    Raises:
+        TypeError: If the input DataFrame or expected schema is not of the correct type.
+    """
+    if not isinstance(df, DataFrame):
+        logger.error("The 'df' parameter must be a PySpark DataFrame.")
+        raise TypeError("The 'df' parameter must be a PySpark DataFrame.")
+    if not isinstance(expected_schema, StructType):
+        logger.error("The 'expected_schema' parameter must be a StructType.")
+        raise TypeError("The 'expected_schema' parameter must be a StructType.")
+
+    # Compare the schemas
+    actual_schema = df.schema
+    if actual_schema == expected_schema:
+        logger.info("Schema validation passed.")
+        return True
+    else:
+        logger.error("Schema validation failed.")
+        logger.error("Expected Schema: %s", expected_schema.simpleString())
+        logger.error("Actual Schema: %s", actual_schema.simpleString())
+        return False
 
 
 def check_missing_values(df_name: str, df: DataFrame, column: str) -> int:
