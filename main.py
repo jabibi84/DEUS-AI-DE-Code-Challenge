@@ -56,11 +56,6 @@ def main():
             for field in columns:
                 if field.get("unique"):
                     df_data = (
-                        drop_duplicates(df_data, field["name"])
-                        if check_duplicates(name, df_data, field["name"]) > 0
-                        else df_data
-                    )
-                    df_data = (
                         remove_duplicates_by_column(name, df_data, field["name"])
                         if check_duplicates(name, df_data, field["name"]) > 0
                         else df_data
