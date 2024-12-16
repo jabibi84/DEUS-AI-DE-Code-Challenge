@@ -98,52 +98,25 @@ def get_dtype(df: DataFrame, colname: str) -> str:
         TypeError: If the input DataFrame is not a Spark DataFrame or colname is not a string.
         ValueError: If the specified column name does not exist in the DataFrame.
     """
-    # Validate input types
     if not isinstance(df, DataFrame):
+        logger.error("The 'df' parameter must be a Spark DataFrame.")
         raise TypeError("The 'df' parameter must be a Spark DataFrame.")
     if not isinstance(colname, str):
+        logger.error("The 'colname' parameter must be a string.")
         raise TypeError("The 'colname' parameter must be a string.")
 
-    # Check if column exists
     if colname not in df.columns:
-        raise ValueError(f"Column '{colname}' does not exist in the DataFrame. Available columns: {df.columns}")
+        logger.error(f"Column '{colname}' does not exist in the DataFrame.")
+        raise ValueError(f"Column '{colname}' does not exist in the DataFrame.")
 
-    # Get the data type of the column
     try:
         return [dtype for name, dtype in df.dtypes if name == colname][0]
+        dtype = [dtype for name, dtype in df.dtypes if name == colname][0]
+        logger.info(f"Data type of column '{colname}' is {dtype}.")
+        return dtype
     except IndexError:
-        # This shouldn't happen due to the prior column existence check, but included for safety.
-        raise ValueError(f"Unexpected error: Column '{colname}' could not be found in the DataFrame.")
-
-
-logger = get_logger(__name__)
-
-
-def get_config(file_path: str) -> dict:
-    """
-    Reads a configuration file in JSON format and parses it into a dictionary.
-
-    Args:
-        file_path (str): Path to the JSON configuration file.
-
-    Returns:
-        dict: Parsed configuration as a dictionary.
-    """
-    logger.info("Getting Dataset configuration.")
-    try:
-        with open(file_path, "r") as file:
-            config = json.load(file)
-        logger.info("Configuration File loaded successfully.")
-        return config
-
-    except FileNotFoundError:
-        logger.error(f"Error: Configuration file not found at {file_path}")
-        raise
-    except json.JSONDecodeError as e:
-        logger.error(f"Error: Failed to decode JSON. {e}")
-        raise
-    except Exception as e:
-        logger.error(f"Error: Failed to decode JSON. {e}")
+        logger.error(f"Unexpected error: Column '{colname}' could not be found.")
+        raise ValueError(f"Unexpected error: Column '{colname}' could not be found.")
 
 
 def write_dataframe(
