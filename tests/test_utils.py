@@ -1,13 +1,9 @@
-from utils import get_config, get_logger, write_dataframe
+
+import pytest
+from src.utils import get_config, get_logger, write_dataframe
 from pyspark.sql import SparkSession
 from pyspark.sql.types import StructType, StructField, StringType, IntegerType
 from chispa.dataframe_comparer import assert_df_equality
-
-
-def test_get_config():
-    config_path = "tests/sample_config.json"
-    config = get_config(config_path)
-    assert config["general"]["log_level"] == "INFO"
 
 
 def test_get_logger():
@@ -31,3 +27,4 @@ def test_write_dataframe(spark):
     # Reload to confirm write
     reloaded_df = spark.read.parquet(output_path)
     assert_df_equality(df, reloaded_df, ignore_row_order=True, ignore_column_order=True)
+

@@ -2,7 +2,7 @@ import pytest
 from pyspark.sql import SparkSession
 from pyspark.sql.types import StructType, StructField, StringType, IntegerType
 from chispa.dataframe_comparer import assert_df_equality
-from validations import (
+from src.validations import (
     check_duplicates,
     check_missing_values,
     check_data_format,

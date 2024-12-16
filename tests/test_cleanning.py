@@ -1,7 +1,10 @@
-from pyspark.sql import SparkSession
+from pyspark import sql
+import sys
+
+sys.path.append("./src")
 from pyspark.sql.types import StructType, StructField, StringType, IntegerType
 from chispa.dataframe_comparer import assert_df_equality
-from cleanning import (
+from src.cleanning import (
     drop_duplicates,
     enforce_dataframe_schema,
     remove_duplicates_by_column,
