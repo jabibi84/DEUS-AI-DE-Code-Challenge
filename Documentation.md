@@ -2,11 +2,11 @@
 
 ## Overview
 
-This project aims to solve DEUS.AI Data Engineering Challenge. My approach focuses on keep it simple implementing a scalable solution to deliver reliable, reproducible results.
+This project aims to solve DEUS.AI Data Engineering Challenge. The approach focuses on keep it simple implementing a scalable solution to deliver reliable, reproducible results.
 
 ## Approach
 
-My primary approach can be broken down into the following key steps:
+Primary approach can be broken down into the following key steps:
 
 1. **Problem Analysis:**  
    Begin analyzing the domain and identifying the core challenges. This included:
@@ -55,7 +55,10 @@ My primary approach can be broken down into the following key steps:
 
 3. **Implementation Details:**  
    Each component is implemented with clarity and extensibility in mind:
-   - **Data Preprocessing:** Load, Validate, cleaned and transformed.  
+   - **Data Preprocessing:** Load data in raw format 
+   - **Validate:** Perform check data quality
+   - **Cleaning:** Fix any issue detected in the previous stage.  
+   - **Transformed:** Once data is cleaned and validate perform transformations requested.   
   
 4. **Validation & Testing:**  
    Comprehensive testing ensures reliability:
@@ -82,16 +85,12 @@ My primary approach can be broken down into the following key steps:
    - **Install Docker:**  
      Ensure you have Docker installed. Follow instructions at [https://docs.docker.com/get-docker/](https://docs.docker.com/get-docker/).
 
-2. **Build the Docker Image:**
-   ```bash
-   docker compose up --build
-
-3. **Create new python enviroment 
+2**Create new python enviroment 
     ```` 
     python -m venv env
     ````
 
-    3.1. **Activate new python environment: 
+    2.1. **Activate new python environment: 
 
     Windows
     ```
@@ -103,13 +102,18 @@ My primary approach can be broken down into the following key steps:
     source ./env/bin/activate
     ```
 
-4. **Configure githook to run test code before each commit 
+3. **Configure githook to run test code before each commit 
 
     ```
     cp ./git-hook/* ./.git/hooks/
     ```
 
-5. **Install Python Packages  
+4. **Install Python Packages  
     ```bash 
    pip install -r ./requirements.txt
    ```
+
+5. **Build the Docker Compose:**
+   ```bash
+   docker compose up --build
+
