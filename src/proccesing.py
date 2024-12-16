@@ -1,7 +1,9 @@
 import os
+
 from pyspark.sql import DataFrame, SparkSession
 from pyspark.sql.types import StructType
 from pyspark.sql.utils import AnalysisException
+
 from src.utils import get_logger
 
 logger = get_logger(__name__)
