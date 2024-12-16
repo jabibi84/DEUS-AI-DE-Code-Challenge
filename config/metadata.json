@@ -1,4 +1,5 @@
 {
+  "general": {"log_level": "INFO"},
   "datasets": [
     {
       "name": "SalesTransactions",
