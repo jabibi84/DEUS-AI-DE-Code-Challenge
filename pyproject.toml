@@ -1,0 +1,5 @@
+[tool.isort]
+profile = "black"
+known_third_party = "pyspark"
+line_length = 88
+skip = ["env", ".env", "venv", ".venv", "env_*", "venv_*"]

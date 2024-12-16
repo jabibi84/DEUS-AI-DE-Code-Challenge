@@ -1,0 +1,19 @@
+[flake8]
+max-line-length = 88
+exclude =
+    .git,
+    __pycache__,
+    docs,
+    build,
+    dist,
+    env,
+    .env,
+    venv,
+    .venv,
+    env_*,
+    venv_*,
+    */env/*,  # Excluye subdirectorios llamados "env"
+    */venv/*, # Excluye subdirectorios llamados "venv"
+    .tox,     # Excluye directorios creados por herramientas como tox
+    .mypy_cache  # Excluye cachés
+extend-ignore = E501, W503
