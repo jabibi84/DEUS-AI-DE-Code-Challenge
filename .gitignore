@@ -1,0 +1,10 @@
+!.gitkeep
+/env/
+/java_opts.txt
+**/.idea/
+/data/output/*
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/

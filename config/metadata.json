@@ -1,0 +1,85 @@
+{
+  "general": {"log_level": "INFO"},
+  "datasets": [
+    {
+      "name": "SalesTransactions",
+      "file": "data/input/sales_uuid.csv",
+      "columns": [
+        {
+          "name": "transaction_id",
+          "description": "Unique identifier for the transaction.",
+          "type": "string"
+        },
+        {
+          "name": "store_id",
+          "description": "ID of the store where the transaction occurred.",
+          "type": "string"
+        },
+        {
+          "name": "product_id",
+          "description": "ID of the product sold.",
+          "type": "string"
+        },
+        {
+          "name": "quantity",
+          "description": "Number of units sold.",
+          "type": "float"
+        },
+        {
+          "name": "transaction_date",
+          "description": "Date of the transaction. format  (format: YYYY-MM-DD)",
+          "type": "date"
+        },
+        {
+          "name": "price",
+          "description": "Price per unit.",
+          "type": "float"
+        }
+      ]
+    },
+    {
+      "name": "Products",
+      "file": "data/input/products_uuid.csv",
+      "columns": [
+        {
+          "name": "product_id",
+          "description": "Unique identifier for the product.",
+          "type": "string",
+          "unique": "True"
+        },
+        {
+          "name": "product_name",
+          "description": "Name of the product.",
+          "type": "string"
+        },
+        {
+          "name": "category",
+          "description": "Category of the product.",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "Stores",
+      "file": "data/input/stores_uuid.csv",
+      "columns": [
+        {
+          "name": "store_id",
+          "description": "Unique identifier for the store.",
+          "type": "string",
+          "unique": "True"
+        },
+        {
+          "name": "store_name",
+          "description": "Name of the store.",
+          "type": "string"
+        },
+        {
+          "name": "location",
+          "description": "Location of the store.",
+          "type": "string"
+        }
+      ]
+    }
+  ]
+}

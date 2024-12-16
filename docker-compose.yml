@@ -1,0 +1,17 @@
+version: "3.9"
+services:
+  pyspark:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./:/app
+    ports:
+      - "4040:4040"  # Map Spark UI port
+    stdin_open: true  # Keep stdin open for interaction
+    tty: true         # Allocate a pseudo-TTY
+    command: /bin/bash  # Start with a bash shell instead of running the PySpark app
+    networks:
+      - pyspark_network
+networks:
+      pyspark_network: {}  # Mapeo requerido para redes en la sección de servicios
