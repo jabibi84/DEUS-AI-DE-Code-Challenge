@@ -1,6 +1,8 @@
 from src.utils import get_logger
 from pyspark.sql import DataFrame
 from pyspark.sql.functions import col
+from src.utils import get_config, get_logger
+
 
 logger = get_logger(__name__)
 
@@ -72,7 +74,6 @@ def check_duplicates(df_name: str, df: DataFrame, column: str = None) -> int:
     """
     try:
         if column:
-            logger.info(f" Values on {df_name} - Column: {column}")
             duplicate_count = df.count() - df.select(column).distinct().count()
             if duplicate_count > 0:
                 logger.info(
