@@ -110,7 +110,6 @@ def get_dtype(df: DataFrame, colname: str) -> str:
         raise ValueError(f"Column '{colname}' does not exist in the DataFrame.")
 
     try:
-        return [dtype for name, dtype in df.dtypes if name == colname][0]
         dtype = [dtype for name, dtype in df.dtypes if name == colname][0]
         logger.info(f"Data type of column '{colname}' is {dtype}.")
         return dtype
@@ -148,7 +147,7 @@ def write_dataframe(
         elif format == "parquet":
             writer.parquet(output_path)
 
-        logger.info(f"DataFrame written in {format} format to: {output_path}")
+        logger.info(f"DF written in {format} format to: {output_path}")
     except Exception as e:
         logger.error(f"Failed to write DataFrame in {format} format. Error: {e}")
         raise
