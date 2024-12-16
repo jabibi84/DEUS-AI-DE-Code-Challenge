@@ -1,5 +1,8 @@
 from pyspark.sql import DataFrame
 from pyspark.sql.functions import col, sum, year, month
+from src.utils import get_logger, get_config
+
+logger = get_logger(__name__)
 
 
 def calculate_total_revenue(sales_df: DataFrame, products_df: DataFrame) -> DataFrame:
@@ -105,7 +108,9 @@ def categorize_price(price):
         ValueError: If the input is a negative value.
     """
     if not isinstance(price, (int, float)):
-        raise TypeError(f"Invalid type: {type(price)}. The price must be a number (int or float).")
+        raise TypeError(
+            f"Invalid type: {type(price)}. The price must be a number (int or float)."
+        )
 
     if price < 0:
         raise ValueError("Price cannot be negative.")
