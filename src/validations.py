@@ -85,7 +85,7 @@ def check_data_format(
         ).count()
         if inconsistent_count > 0:
             logger.info(
-                f"DataFrame: {df_name} Column '{column}' has {inconsistent_count} inconsistent rows (not {expected_type})."
+                f"DF: {df_name} Column '{column}' has {inconsistent_count} inconsistent rows (not {expected_type})."
             )
         return inconsistent_count
     except Exception as e:
