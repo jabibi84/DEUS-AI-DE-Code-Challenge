@@ -1,11 +1,13 @@
 import sys
 
+# Modificar sys.path antes de cualquier importación
+sys.path.append("./src")
+
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import udf
 from pyspark.sql.types import FloatType, StringType
 
-sys.path.append("./src")
-
+# Importar módulos desde el directorio "src"
 from src.cleanning import (
     drop_duplicates,
     enforce_dataframe_schema,
@@ -21,12 +23,8 @@ from src.transformations import (
     enrich_data,
 )
 from src.utils import get_config, get_logger, write_dataframe
-from src.validations import (
-    check_data_format,
-    check_duplicates,
-    check_missing_values,
-    validate_schema,
-)
+from src.validations import check_duplicates
+
 
 logger = get_logger(__name__)
 
