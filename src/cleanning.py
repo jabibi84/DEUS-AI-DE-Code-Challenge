@@ -96,3 +96,54 @@ def enforce_dataframe_schema(
     return casted_df
 
 
+def remove_duplicates_by_column(
+    df_name: str, df: DataFrame, column: str
+) -> (DataFrame, int):
+    """
+    Removes duplicate rows from a DataFrame based on a specific column.
+
+    Args:
+        df_name (str): The name of the DataFrame for logging purposes.
+        df (DataFrame): The PySpark DataFrame.
+        column (str): The name of the column to base duplicate removal on.
+
+    Returns:
+        tuple: A tuple containing:
+            - DataFrame: The DataFrame with duplicates removed.
+            - int: The count of duplicate rows removed.
+
+    Raises:
+        ValueError: If the specified column is not in the DataFrame.
+    """
+    logger.info(
+        f"Removing duplicates in DataFrame: {df_name} based on column: {column}"
+    )
+
+    # validate if columns provide exists
+    if column not in df.columns:
+        logger.error(f"Column '{column}' does not exist in the DataFrame: {df_name}.")
+        raise ValueError(f"Column '{column}' does not exist in the DataFrame.")
+
+    try:
+        # count amount of rows
+        total_rows_before = df.count()
+
+        # drop duplicates rows based on column
+        df = df.dropDuplicates([column])
+
+        # Count rows after delete fuplicates
+        total_rows_after = df.count()
+
+        # calculate amount of rows after delete duplicates
+        duplicates_count = total_rows_before - total_rows_after
+        logger.info(
+            f"Removed {duplicates_count} duplicate rows based on column: {column}"
+        )
+
+        return df, duplicates_count
+
+    except Exception as e:
+        logger.error(
+            f"Error while removing duplicates from DataFrame: {df_name}. Error: {e}"
+        )
+        raise
