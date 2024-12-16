@@ -123,5 +123,3 @@ def check_duplicates(df_name: str, df: DataFrame, column: str = None) -> int:
 
     except Exception as e:
         logger.error(f"Application encountered an error: {e}")
-
-
