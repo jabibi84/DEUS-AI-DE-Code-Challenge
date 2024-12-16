@@ -1,4 +1,3 @@
-
 import pytest
 from src.utils import get_config, get_logger, write_dataframe
 from pyspark.sql import SparkSession
@@ -27,4 +26,3 @@ def test_write_dataframe(spark):
     # Reload to confirm write
     reloaded_df = spark.read.parquet(output_path)
     assert_df_equality(df, reloaded_df, ignore_row_order=True, ignore_column_order=True)
-

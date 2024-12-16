@@ -1,7 +1,7 @@
 from pyspark.sql import SparkSession
 from pyspark.sql.types import StructType, StructField, StringType, IntegerType
 from chispa.dataframe_comparer import assert_df_equality
-from proccesing import load_csv
+from src.proccesing import load_csv
 
 
 def test_load_csv(spark):
