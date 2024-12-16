@@ -64,9 +64,7 @@ Primary approach can be broken down into the following key steps:
    Comprehensive testing ensures reliability:
    - **Unit Tests:** Validate individual modules.  
    - **Integration Tests:** Verify that components work together as intended.  
-   - **Performance Tests:** Assess speed and resource usage.  
-   - **User Acceptance Tests (If Applicable):** Confirm that the solution meets end-user requirements.
-
+   
 5. **Deployment:**  
    The final solution is packaged into a Docker container for ease of deployment. Continuous Integration/Continuous Deployment (CI/CD) pipelines help maintain code quality and streamline updates.
 
