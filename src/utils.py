@@ -4,28 +4,48 @@ from pyspark.sql import DataFrame
 import os
 
 
-def get_logger(name: str) -> logging.Logger:
+def get_logger(name: str, level: str = "INFO") -> logging.Logger:
     """
     Configures and returns a logger to write messages during
-    execution tim.
+    execution time with a specified log level.
 
     Args:
         name (str): The name of the logger.
+        level (str): The logging level. Options are "DEBUG", "INFO",
+                     "WARNING", "ERROR", or "CRITICAL". Default is "INFO".
 
     Returns:
         logging.Logger: Configured logger.
+
+    Raises:
+        ValueError: If the provided logging level is invalid.
     """
+    # Map string level to logging level
+    valid_levels = {
+        "DEBUG": logging.DEBUG,
+        "INFO": logging.INFO,
+        "WARNING": logging.WARNING,
+        "ERROR": logging.ERROR,
+        "CRITICAL": logging.CRITICAL,
+    }
+
+    if level not in valid_levels:
+        raise ValueError(
+            f"Invalid log level '{level}'. Choose from {list(valid_levels.keys())}."
+        )
+
     logger = logging.getLogger(name)
-    logger.setLevel(logging.INFO)
+    logger.setLevel(valid_levels[level])
 
     console_handler = logging.StreamHandler()
-    console_handler.setLevel(logging.INFO)
+    console_handler.setLevel(valid_levels[level])
 
     formatter = logging.Formatter(
         "%(asctime)s - %(name)s - %(levelname)s - %(funcName)s - %(message)s"
     )
     console_handler.setFormatter(formatter)
 
+    # Avoid adding multiple handlers to the logger
     if not logger.handlers:
         logger.addHandler(console_handler)
 
