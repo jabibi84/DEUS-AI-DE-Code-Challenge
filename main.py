@@ -1,7 +1,3 @@
-import sys
-
-sys.path.append("./src")  # noqa: E402
-
 from pyspark.sql import SparkSession  # noqa: E402
 from pyspark.sql.functions import udf  # noqa: E402
 from pyspark.sql.types import FloatType, StringType  # noqa: E402
