@@ -102,7 +102,9 @@ def main():
 
         # transformations
         df_revenue = calculate_total_revenue(df_transactions, df_Products_clean)
-        df_monthly_sales = calculate_monthly_sales(df_transactions, df_Products_clean)  # noqa: F821
+        df_monthly_sales = calculate_monthly_sales(
+            df_transactions, df_Products_clean
+        )  # noqa: F821
         df_enrich = enrich_data(df_transactions, df_Products_clean, df_Stores_clean)
 
         # output
