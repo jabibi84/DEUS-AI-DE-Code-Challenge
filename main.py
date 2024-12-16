@@ -1,7 +1,7 @@
 import sys
 
 # Modificar sys.path antes de cualquier importación
-sys.path.append("./src")
+sys.path.append("./src")  # noqa: E402
 
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import udf
