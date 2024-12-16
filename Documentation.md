@@ -86,25 +86,22 @@ Primary approach can be broken down into the following key steps:
      Ensure you have Docker installed. Follow instructions at [https://docs.docker.com/get-docker/](https://docs.docker.com/get-docker/).
 
 2**Create new python enviroment 
-    ```` 
+  
     python -m venv env
-    ````
 
-    2.1. **Activate new python environment: 
+2.1. **Activate new python environment: 
 
-    Windows
-    ```
+Windows
+
     .\env\scripts\activate
-    ```
 
-    MacOS & Linux
-    ```
+MacOS & Linux
+    
     source ./env/bin/activate
-    ```
 
 3. **Configure githook to run test code before each commit 
 
-    ```
+    ```bash
     cp ./git-hook/* ./.git/hooks/
     ```
 
