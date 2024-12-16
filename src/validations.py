@@ -78,7 +78,6 @@ def check_data_format(
     Returns:
         int: The count of inconsistent rows.
     """
-    logger.info(f" on {df_name} - {column}")
     try:
         inconsistent_count = df.filter(
             ~col(column).cast(expected_type).isNotNull()
@@ -124,3 +123,5 @@ def check_duplicates(df_name: str, df: DataFrame, column: str = None) -> int:
 
     except Exception as e:
         logger.error(f"Application encountered an error: {e}")
+
+
