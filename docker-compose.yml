@@ -10,7 +10,7 @@ services:
       - "4040:4040"  # Map Spark UI port
     stdin_open: true  # Keep stdin open for interaction
     tty: true         # Allocate a pseudo-TTY
-    command: /bin/bash  # Start with a bash shell instead of running the PySpark app
+    command: spark-submit --conf spark.driver.extraJavaOptions=-Dlog4j.configuration=./log4j.properties ./main.py
     networks:
       - pyspark_network
 networks:
