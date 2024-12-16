@@ -35,7 +35,7 @@ def main():
     logger.info("Starting the application...")
     try:
         spark = SparkSession.builder.appName(
-            "Deus DE - Challenge Jlondono"
+            "Deus DE - Code Challenge Jlondono"
         ).getOrCreate()
         logger.info("SparkSession initialized.")
 
@@ -45,24 +45,42 @@ def main():
             name = tbl["name"]
             path = tbl["file"]
             columns = tbl["columns"]
-            schema = SchemaManager.get_schema(name)
-            # logger.info(schema)
-
-            # load datasets and validate datasets
-            df_data = load_data(spark, path)
-            globals()[f"df_{name}"] = load_data(spark, path)
-            logger.info(f"Loaded dataset: {name}  path: {path}")
-            check_duplicates(name, df_data)
+            # ***************************************************************
+            # 1. 1. Data Preparations - load datasets and validate duplicates
+            # ***************************************************************
+            globals()[f"df_{name}"] = load_csv(spark, path)
+            df_data = globals()[f"df_{name}"]
+            # *********************************************
+            # Identify and handle duplicates (General DF)
+            # *********************************************
+            df_data = (
+                drop_duplicates(df_data)
+                if check_duplicates(name, df_data) > 0
+                else df_data
+            )
+            # *******************************************
+            # Identify and handle duplicates (By Column)
+            # *******************************************
             for field in columns:
-                check_missing_values(name, df_data, field["name"])
-                check_data_format(name, df_data, field["name"], field["type"])
                 if field.get("unique"):
-                    check_duplicates(name, df_data, field["name"])
+                    df_data = (
+                        drop_duplicates(df_data, field["name"])
+                        if check_duplicates(name, df_data, field["name"]) > 0
+                        else df_data
+                    )
+                    df_data = (
+                        remove_duplicates_by_column(name, df_data, field["name"])
+                        if check_duplicates(name, df_data, field["name"]) > 0
+                        else df_data
+                    )
 
-        # data cleanning
+            globals()[f"df_{name}"] = df_data
+
+        # Fixing inconsistences data format - Data Cleaning
         df_transactions = standardize_date_format(
             df_SalesTransactions, "transaction_date"
         ).drop("transaction_date")
+
         df_transactions = df_transactions.withColumnRenamed(
             "standardized_date", "transaction_date"
         )
@@ -73,14 +91,23 @@ def main():
             "price_category",
             categorize_price_udf(df_transactions["price"].cast(FloatType())),
         )
-        df_transactions.show()
+
+        df_transactions = enforce_dataframe_schema(
+            "TransactionSales",
+            df_transactions,
+            SchemaManager.get_schema("SalesTransactions"),
+        )
+        df_Products_clean = enforce_dataframe_schema(
+            "Products", df_Products, SchemaManager.get_schema("Products")
+        )
+        df_Stores_clean = enforce_dataframe_schema(
+            "Stores", df_Stores, SchemaManager.get_schema("Stores")
+        )
 
         # transformations
-        df_revenue = calculate_total_revenue(df_transactions, df_Products)
-
-        df_monthly_sales = calculate_monthly_sales(df_transactions, df_Products)
-
-        df_enrich = enrich_data(df_transactions, df_Products, df_Stores)
+        df_revenue = calculate_total_revenue(df_transactions, df_Products_clean)
+        df_monthly_sales = calculate_monthly_sales(df_transactions, df_Products_clean)
+        df_enrich = enrich_data(df_transactions, df_Products_clean, df_Stores_clean)
 
         # output
         write_dataframe(
@@ -94,13 +121,6 @@ def main():
         write_dataframe(
             df=df_revenue,
             output_path="data/output/Revenueinsights",
-            format="csv",
-            mode="overwrite",
-        )
-
-        write_dataframe(
-            df=df_transactions,
-            output_path="data/output/transactions",
             format="csv",
             mode="overwrite",
         )
