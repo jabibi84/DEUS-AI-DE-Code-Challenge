@@ -78,6 +78,12 @@ Primary approach can be broken down into the following key steps:
   prioritize efficiency over absolute accuracy if the latter required significantly higher computational resources. This ensures that the solution runs within reasonable time frames and hardware limits.
 - **Technology Decisions:**  
   Using Python and Docker was guided by the availability of community support, existing tools, and the ease of integration.
+- **Granularity of changes:**
+  - Granularity and Traceability:By committing small, discrete changes, it’s easier to identify which commit introduced a specific feature, bug, or improvement. This makes debugging and rolling back problematic changes more straightforward.
+  - Clarity and Communication: Clear, concise commit messages tied to focused changes help others understand the purpose and logic behind each modification. This well-structured commit history can serve as a valuable reference over time.
+  - Improved Code Review Process: Small commits make code reviews more manageable and less time-consuming. Reviewers can more easily spot issues, ensuring that feedback is timely and corrections are more efficient.
+  - Easier Reversions: If a particular commit turns out to be problematic, reverting just that commit is simpler when it contains a minimal set of changes rather than a large, mixed batch of updates.
+
 
 ## Steps to Run the Code and Reproduce Results
 
