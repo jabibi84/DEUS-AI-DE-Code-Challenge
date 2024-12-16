@@ -1,6 +1,7 @@
 from pyspark.sql import DataFrame
-from pyspark.sql.functions import col, sum, year, month
-from src.utils import get_logger, get_config
+from pyspark.sql.functions import col, month, sum, year
+
+from src.utils import get_logger
 
 logger = get_logger(__name__)
 
