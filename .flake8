@@ -9,6 +9,7 @@ exclude =
     env,
     .env,
     venv,
+    tests,
     .venv,
     env_*,
     venv_*,

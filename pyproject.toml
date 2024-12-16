@@ -2,7 +2,7 @@
 profile = "black"
 known_third_party = "pyspark"
 line_length = 88
-skip = ["env", ".env", "venv", ".venv", "env_*", "venv_*"]
+skip = ["env", ".env", "venv", ".venv", "env_*", "venv_*", "tests"]
 
 [tool.pytest.ini_options]
 pythonpath = [
