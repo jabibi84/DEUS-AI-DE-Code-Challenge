@@ -14,7 +14,7 @@ echo "\n⌛ Starting isort test..."
 python -m isort --check-only .
 
 echo "\n⌛ Starting Flake8 test..."
-python -m flake8 .
+python -m flake8 -v .
 
 echo "\n⌛ Starting Black test..."
 black . --check
