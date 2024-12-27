@@ -1,78 +1,98 @@
+import sys
+import os
+import datetime
 from pyspark.sql import SparkSession
+# Add src to the Python path
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../src")))
 from pyspark.sql.types import (
     StructType,
     StructField,
     StringType,
     IntegerType,
     FloatType,
+    DoubleType,
+    DateType
 )
 from chispa.dataframe_comparer import assert_df_equality
+from pyspark.sql.functions import udf
 from src.transformations import (
     calculate_monthly_sales,
     calculate_total_revenue,
     categorize_price,
-    enrich_data,
+    enrich_data
 )
+from src.SparkSchemas import SchemaManager
 
 
 def test_calculate_total_revenue(spark):
-    # Input DataFrame
-    data = [("Alice", 100), ("Bob", 200), ("Alice", 150)]
-    schema = StructType(
-        [
-            StructField("name", StringType(), True),
-            StructField("amount", IntegerType(), True),
-        ]
-    )
-    df = spark.createDataFrame(data, schema)
+    # Datos de entrada
+    sales_data = [
+        ("1", "1", "P1", 10.0, None, 2.0),
+        ("2", "1", "P1", 15.0, None, 3.0),
+        ("3", "2", "P2", 5.0, None, 5.0),
+    ]
+    products_data = [
+        ("P1", "Product A", "Category A"),
+        ("P2", "Product B", "Category B"),
+    ]
 
-    # Expected DataFrame
-    expected_data = [("Alice", 250), ("Bob", 200)]
-    expected_schema = StructType(
-        [
-            StructField("name", StringType(), True),
-            StructField("total_revenue", IntegerType(), True),
-        ]
-    )
+    # DataFrames de prueba
+    sales_df = spark.createDataFrame(sales_data, SchemaManager.get_schema("SalesTransactions"))
+    products_df = spark.createDataFrame(products_data, SchemaManager.get_schema("Products"))
+
+    # Resultado esperado
+    expected_data = [
+        ("1", "Category A", 65.0),  # 10*2 + 15*3
+        ("2", "Category B", 25.0),  # 5*5
+    ]
+    expected_schema = StructType([
+        StructField("store_id", StringType(), True),
+        StructField("category", StringType(), True),
+        StructField("total_revenue", DoubleType(), True),
+    ])
     expected_df = spark.createDataFrame(expected_data, expected_schema)
 
-    # Run function
-    result = calculate_total_revenue(df)
-
-    # Assert
-    assert_df_equality(
-        result, expected_df, ignore_row_order=True, ignore_column_order=True
-    )
+    # Prueba
+    result_df = calculate_total_revenue(sales_df, products_df)
+    assert_df_equality(result_df, expected_df, ignore_row_order=True)
 
 
 def test_calculate_monthly_sales(spark):
-    # Input DataFrame
-    data = [("2023-01-01", 100), ("2023-01-15", 150), ("2023-02-01", 200)]
-    schema = StructType(
-        [
-            StructField("date", StringType(), True),
-            StructField("sales", IntegerType(), True),
-        ]
-    )
-    df = spark.createDataFrame(data, schema)
+    #transaction_id, store_id, product_id, quantity, transaction_date, price
+    # Datos de entrada
+    sales_data = [
+        ("1", "1", "P1", 10.0, datetime.date(2024, 12, 1), None),
+        ("2", "1", "P1", 15.0, datetime.date(2024, 12, 15), None),
+        ("3", "2", "P2", 5.0, datetime.date(2024, 11, 1), None),
+    ]
 
-    # Expected DataFrame
-    expected_data = [("2023-01", 250), ("2023-02", 200)]
-    expected_schema = StructType(
-        [
-            StructField("month", StringType(), True),
-            StructField("total_sales", IntegerType(), True),
-        ]
-    )
+    products_data = [
+        ("P1", "Product A", "Category A"),
+        ("P2", "Product B", "Category B"),
+    ]
+
+    # DataFrames de prueba
+    sales_df = spark.createDataFrame(sales_data, SchemaManager.get_schema("SalesTransactions"))
+    sales_df = sales_df.withColumn("transaction_date", sales_df["transaction_date"].cast(DateType()))
+
+    products_df = spark.createDataFrame(products_data, SchemaManager.get_schema("Products"))
+
+    # Resultado esperado
+    expected_data = [
+        (2024, 12, "Category A", 25.0),  # 10+15
+        (2024, 11, "Category B", 5.0),   # 5
+    ]
+    expected_schema = StructType([
+        StructField("year", IntegerType(), True),
+        StructField("month", IntegerType(), True),
+        StructField("category", StringType(), True),
+        StructField("total_quantity_sold", DoubleType(), True),
+    ])
     expected_df = spark.createDataFrame(expected_data, expected_schema)
 
-    # Run function
-    result = calculate_monthly_sales(df, "date", "sales")
-
-    # Assert
-    assert_df_equality(
-        result, expected_df, ignore_row_order=True, ignore_column_order=True
-    )
+    # Prueba
+    result_df = calculate_monthly_sales(sales_df, products_df)
+    assert_df_equality(result_df, expected_df, ignore_row_order=True)
 
 
 def test_categorize_price(spark):
@@ -101,8 +121,12 @@ def test_categorize_price(spark):
     )
     expected_df = spark.createDataFrame(expected_data, expected_schema)
 
-    # Run function
-    result = categorize_price(df, "price", "price_category")
+    # Registrar la función como UDF (User Defined Function)
+    categorize_price_udf = udf(categorize_price, StringType())
+    result = df.withColumn(
+        "price_category",
+        categorize_price_udf(df["price"].cast(FloatType())),
+    )
 
     # Assert
     assert_df_equality(
@@ -111,54 +135,38 @@ def test_categorize_price(spark):
 
 
 def test_enrich_data(spark):
-    # Input DataFrame 1
+    # Datos de entrada
     sales_data = [
-        ("Alice", 100, "2023-01"),
-        ("Bob", 200, "2023-01"),
+        ("T1", "1", "P1", 10.0, datetime.date(2024, 12, 1), None),
     ]
-    sales_schema = StructType(
-        [
-            StructField("name", StringType(), True),
-            StructField("sales", IntegerType(), True),
-            StructField("month", StringType(), True),
-        ]
-    )
-    sales_df = spark.createDataFrame(sales_data, sales_schema)
-
-    # Input DataFrame 2
-    demographic_data = [
-        ("Alice", 30, "Engineer"),
-        ("Bob", 40, "Manager"),
+    products_data = [
+        ("P1", "Product A", "Category A"),
     ]
-    demographic_schema = StructType(
-        [
-            StructField("name", StringType(), True),
-            StructField("age", IntegerType(), True),
-            StructField("occupation", StringType(), True),
-        ]
-    )
-    demographic_df = spark.createDataFrame(demographic_data, demographic_schema)
+    stores_data = [
+        ("1", "Store A", "Location A"),
+    ]
 
-    # Expected DataFrame
+    # DataFrames de prueba
+    sales_df = spark.createDataFrame(sales_data, SchemaManager.get_schema("SalesTransactions"))
+    products_df = spark.createDataFrame(products_data, SchemaManager.get_schema("Products"))
+    stores_df = spark.createDataFrame(stores_data, SchemaManager.get_schema("Stores"))
+
+    # Resultado esperado
     expected_data = [
-        ("Alice", 100, "2023-01", 30, "Engineer"),
-        ("Bob", 200, "2023-01", 40, "Manager"),
+        ("T1", "Store A", "Location A", "Product A", "Category A", 10.0, datetime.date(2024, 12, 1), None),
     ]
-    expected_schema = StructType(
-        [
-            StructField("name", StringType(), True),
-            StructField("sales", IntegerType(), True),
-            StructField("month", StringType(), True),
-            StructField("age", IntegerType(), True),
-            StructField("occupation", StringType(), True),
-        ]
-    )
+    expected_schema = StructType([
+        StructField("transaction_id", StringType(), True),
+        StructField("store_name", StringType(), True),
+        StructField("location", StringType(), True),
+        StructField("product_name", StringType(), True),
+        StructField("category", StringType(), True),
+        StructField("quantity", FloatType(), True),
+        StructField("transaction_date", DateType(), True),
+        StructField("price", FloatType(), True),
+    ])
     expected_df = spark.createDataFrame(expected_data, expected_schema)
 
-    # Run function
-    result = enrich_data(sales_df, demographic_df, "name")
-
-    # Assert
-    assert_df_equality(
-        result, expected_df, ignore_row_order=True, ignore_column_order=True
-    )
+    # Prueba
+    result_df = enrich_data(sales_df, products_df, stores_df)
+    assert_df_equality(result_df, expected_df, ignore_row_order=True)
