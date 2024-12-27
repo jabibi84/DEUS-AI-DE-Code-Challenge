@@ -93,16 +93,16 @@ def check_data_format(
 
 def check_duplicates(df_name: str, df: DataFrame, column: str = None) -> int:
     """
-    Identifies duplicates in the DataFrame. If a column is specified, it checks for duplicates
-    based on that column. Otherwise, it checks for duplicates across the entire DataFrame.
+    Identifica duplicados en el DataFrame. Si se especifica una columna, verifica duplicados
+    en esa columna. Si no se especifica, verifica duplicados en todo el DataFrame.
 
     Args:
-        df_name (str): Name of the DataFrame.
-        df (DataFrame): Input DataFrame.
-        column (str, optional): The column to check for duplicates. Defaults to None.
+        df_name (str): Nombre del DataFrame.
+        df (DataFrame): DataFrame de entrada.
+        column (str, optional): Columna para verificar duplicados. Por defecto, verifica en todas las columnas.
 
     Returns:
-        int: Count of duplicate rows.
+        int: Cantidad de filas duplicadas.
     """
     try:
         if column:
@@ -112,7 +112,6 @@ def check_duplicates(df_name: str, df: DataFrame, column: str = None) -> int:
                     f"DataFrame: {df_name} Column '{column}' has {duplicate_count} duplicate rows."
                 )
         else:
-            logger.info(f" Values on {df_name} - Entire DataFrame")
             duplicate_count = df.count() - df.distinct().count()
             if duplicate_count > 0:
                 logger.info(
@@ -123,3 +122,4 @@ def check_duplicates(df_name: str, df: DataFrame, column: str = None) -> int:
 
     except Exception as e:
         logger.error(f"Application encountered an error: {e}")
+        return -1
