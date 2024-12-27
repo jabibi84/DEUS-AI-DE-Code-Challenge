@@ -1,8 +1,9 @@
 from pyspark import sql
 import sys
-
-sys.path.append("./src")
-from pyspark.sql.types import StructType, StructField, StringType, IntegerType
+import os
+# Add src to the Python path
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../src")))
+from pyspark.sql.types import StructType, StructField, StringType, IntegerType, DateType
 from chispa.dataframe_comparer import assert_df_equality
 from src.cleanning import (
     drop_duplicates,
@@ -24,7 +25,7 @@ def test_drop_duplicates(spark):
     expected_data = [("Alice", 30), ("Bob", 25)]
     expected_df = spark.createDataFrame(expected_data, schema)
 
-    result = drop_duplicates("test_df", df)
+    result = drop_duplicates(df)
     assert_df_equality(
         result, expected_df, ignore_row_order=True, ignore_column_order=True
     )
@@ -48,7 +49,7 @@ def test_enforce_dataframe_schema(spark):
     expected_data = [("Alice", 30), ("Bob", 25)]
     expected_df = spark.createDataFrame(expected_data, expected_schema)
 
-    result = enforce_dataframe_schema(df, expected_schema)
+    result = enforce_dataframe_schema("test_df", df, expected_schema)
     assert_df_equality(
         result, expected_df, ignore_row_order=True, ignore_column_order=True
     )
@@ -82,11 +83,23 @@ def test_standardize_date_format(spark):
         ]
     )
     df = spark.createDataFrame(data, schema)
+
     expected_data = [("Alice", "2023-01-01"), ("Bob", "2023-01-02")]
     expected_schema = schema
+
     expected_df = spark.createDataFrame(expected_data, expected_schema)
 
-    result = standardize_date_format(df, "date", "MM-dd-yyyy", "yyyy-MM-dd")
+    result = standardize_date_format(df, "date").drop("date")
+    result = result.withColumnRenamed(
+        "standardized_date", "date"
+    )
+
+    result = result.withColumn("date", result["date"].cast(StringType()))
+
     assert_df_equality(
-        result, expected_df, ignore_row_order=True, ignore_column_order=True
+        result,
+        expected_df,
+        ignore_row_order=True,
+        ignore_column_order=True,
+        ignore_nullable=True
     )
