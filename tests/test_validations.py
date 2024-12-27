@@ -16,27 +16,37 @@ def spark():
 
 
 def test_check_duplicates(spark):
-    # Input DataFrame
-    data = [("Alice", 30), ("Bob", 25), ("Alice", 30)]
-    schema = StructType(
-        [
-            StructField("name", StringType(), True),
-            StructField("age", IntegerType(), True),
-        ]
-    )
+    # Esquema
+    schema = StructType([
+        StructField("id", StringType(), True),
+        StructField("name", StringType(), True),
+        StructField("age", IntegerType(), True),
+    ])
+
+    # DataFrame de prueba
+    data = [
+        ("1", "Alice", 30),  # Primera aparición de la fila
+        ("2", "Bob", 25),
+        ("1", "Alice", 30),  # Duplicado de la primera fila
+    ]
     df = spark.createDataFrame(data, schema)
 
-    # Expected DataFrame
-    expected_data = [("Alice", 30)]
-    expected_df = spark.createDataFrame(expected_data, schema)
+    # Agregar depuración en el test
+    total_rows = df.count()
+    distinct_rows = df.distinct().count()
+    print(f"Total rows: {total_rows}, Distinct rows: {distinct_rows}")
 
-    # Run function
-    duplicates_df = check_duplicates("test_df", df, ["name", "age"])
+    # Verifica duplicados en todas las columnas
+    duplicates_all_columns = check_duplicates("TestDF", df)
+    assert duplicates_all_columns == 1, f"Expected 1 duplicate, got {duplicates_all_columns}"
 
-    # Assert
-    assert_df_equality(
-        duplicates_df, expected_df, ignore_row_order=True, ignore_column_order=True
-    )
+    # Verifica duplicados basados en una columna
+    duplicates_column = check_duplicates("TestDF", df, "id")
+    assert duplicates_column == 1, f"Expected 1 duplicate in 'id', got {duplicates_column}"
+
+    # Verifica que no haya duplicados en una columna sin repetidos
+    duplicates_no_column = check_duplicates("TestDF", df, "name")
+    assert duplicates_no_column == 0, f"Expected 0 duplicates in 'name', got {duplicates_no_column}"
 
 
 def test_check_missing_values(spark):
@@ -58,33 +68,19 @@ def test_check_missing_values(spark):
 
 
 def test_check_data_format(spark):
-    # Input DataFrame
-    data = [("Alice", "2023-01-01"), ("Bob", "2023-01-02"), ("Charlie", "invalid_date")]
-    schema = StructType(
-        [
-            StructField("name", StringType(), True),
-            StructField("date", StringType(), True),
-        ]
-    )
+    # Esquema
+    schema = StructType([
+        StructField("id", StringType(), True),
+        StructField("age", StringType(), True),
+    ])
+
+    # DataFrame de prueba
+    data = [("1", "30"), ("2", "not_a_number"), ("3", "45")]
     df = spark.createDataFrame(data, schema)
 
-    # Expected DataFrame
-    expected_data = [("Charlie", "invalid_date")]
-    expected_schema = StructType(
-        [
-            StructField("name", StringType(), True),
-            StructField("date", StringType(), True),
-        ]
-    )
-    expected_df = spark.createDataFrame(expected_data, expected_schema)
-
-    # Run function
-    invalid_rows_df = check_data_format("test_df", df, "date", "yyyy-MM-dd")
-
-    # Assert
-    assert_df_equality(
-        invalid_rows_df, expected_df, ignore_row_order=True, ignore_column_order=True
-    )
+    # Pruebas
+    assert check_data_format("TestDF", df, "age", "int") == 1
+    assert check_data_format("TestDF", df, "id", "string") == 0
 
 
 def test_validate_schema(spark):
