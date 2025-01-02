@@ -10,7 +10,7 @@ on:
 jobs:
   lint-and-format:
     name: Run Black, Flake8, and Isort
-    runs-on: ubuntu-latest
+    runs-on: apache/spark-py:latest
 
     steps:
       - name: Checkout Code
