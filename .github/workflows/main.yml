@@ -41,6 +41,3 @@ jobs:
         run: |
           python3 -m pytest ./tests/ --maxfail=5 --disable-warnings
 
-      - name: Run Pytest with Coverage
-        run: |
-          pytest --cov=your_module_name --cov-report=xml --maxfail=5 --disable-warnings
