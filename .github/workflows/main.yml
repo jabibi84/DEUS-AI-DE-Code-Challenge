@@ -11,7 +11,10 @@ jobs:
   lint-and-test:
     name: Run Linting and Tests
     runs-on: ubuntu-latest
-    container: apache/spark-py:latest  # Usa el contenedor Docker para ejecutar las tareas
+    container:
+      image: apache/spark-py:latest
+      options: --user root  # Ejecutar como root
+
 
     steps:
       - name: Checkout Code
