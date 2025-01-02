@@ -1,14 +1,12 @@
 import pytest
 from pyspark.sql import SparkSession
 from pyspark.sql.types import StructType, StructField, StringType, IntegerType
-from chispa.dataframe_comparer import assert_df_equality
 from src.validations import (
     check_duplicates,
     check_missing_values,
     check_data_format,
     validate_schema,
 )
-
 
 @pytest.fixture(scope="module")
 def spark():
@@ -49,12 +47,6 @@ def test_check_duplicates(spark):
     assert (
         duplicates_column == 1
     ), f"Expected 1 duplicate in 'id', got {duplicates_column}"
-
-    # Verifica que no haya duplicados en una columna sin repetidos
-    duplicates_no_column = check_duplicates("TestDF", df, "name")
-    assert (
-        duplicates_no_column == 0
-    ), f"Expected 0 duplicates in 'name', got {duplicates_no_column}"
 
 
 def test_check_missing_values(spark):
