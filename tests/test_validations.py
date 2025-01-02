@@ -8,6 +8,7 @@ from src.validations import (
     validate_schema,
 )
 
+
 @pytest.fixture(scope="module")
 def spark():
     return SparkSession.builder.appName("ValidationsTests").getOrCreate()
