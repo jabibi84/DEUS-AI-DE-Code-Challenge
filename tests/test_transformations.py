@@ -2,6 +2,7 @@ import sys
 import os
 import datetime
 from pyspark.sql import SparkSession
+
 # Add src to the Python path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../src")))
 from pyspark.sql.types import (
@@ -11,7 +12,7 @@ from pyspark.sql.types import (
     IntegerType,
     FloatType,
     DoubleType,
-    DateType
+    DateType,
 )
 from chispa.dataframe_comparer import assert_df_equality
 from pyspark.sql.functions import udf
@@ -19,7 +20,7 @@ from src.transformations import (
     calculate_monthly_sales,
     calculate_total_revenue,
     categorize_price,
-    enrich_data
+    enrich_data,
 )
 from src.SparkSchemas import SchemaManager
 
@@ -37,19 +38,25 @@ def test_calculate_total_revenue(spark):
     ]
 
     # DataFrames de prueba
-    sales_df = spark.createDataFrame(sales_data, SchemaManager.get_schema("SalesTransactions"))
-    products_df = spark.createDataFrame(products_data, SchemaManager.get_schema("Products"))
+    sales_df = spark.createDataFrame(
+        sales_data, SchemaManager.get_schema("SalesTransactions")
+    )
+    products_df = spark.createDataFrame(
+        products_data, SchemaManager.get_schema("Products")
+    )
 
     # Resultado esperado
     expected_data = [
         ("1", "Category A", 65.0),  # 10*2 + 15*3
         ("2", "Category B", 25.0),  # 5*5
     ]
-    expected_schema = StructType([
-        StructField("store_id", StringType(), True),
-        StructField("category", StringType(), True),
-        StructField("total_revenue", DoubleType(), True),
-    ])
+    expected_schema = StructType(
+        [
+            StructField("store_id", StringType(), True),
+            StructField("category", StringType(), True),
+            StructField("total_revenue", DoubleType(), True),
+        ]
+    )
     expected_df = spark.createDataFrame(expected_data, expected_schema)
 
     # Prueba
@@ -58,7 +65,7 @@ def test_calculate_total_revenue(spark):
 
 
 def test_calculate_monthly_sales(spark):
-    #transaction_id, store_id, product_id, quantity, transaction_date, price
+    # transaction_id, store_id, product_id, quantity, transaction_date, price
     # Datos de entrada
     sales_data = [
         ("1", "1", "P1", 10.0, datetime.date(2024, 12, 1), None),
@@ -72,22 +79,30 @@ def test_calculate_monthly_sales(spark):
     ]
 
     # DataFrames de prueba
-    sales_df = spark.createDataFrame(sales_data, SchemaManager.get_schema("SalesTransactions"))
-    sales_df = sales_df.withColumn("transaction_date", sales_df["transaction_date"].cast(DateType()))
+    sales_df = spark.createDataFrame(
+        sales_data, SchemaManager.get_schema("SalesTransactions")
+    )
+    sales_df = sales_df.withColumn(
+        "transaction_date", sales_df["transaction_date"].cast(DateType())
+    )
 
-    products_df = spark.createDataFrame(products_data, SchemaManager.get_schema("Products"))
+    products_df = spark.createDataFrame(
+        products_data, SchemaManager.get_schema("Products")
+    )
 
     # Resultado esperado
     expected_data = [
         (2024, 12, "Category A", 25.0),  # 10+15
-        (2024, 11, "Category B", 5.0),   # 5
+        (2024, 11, "Category B", 5.0),  # 5
     ]
-    expected_schema = StructType([
-        StructField("year", IntegerType(), True),
-        StructField("month", IntegerType(), True),
-        StructField("category", StringType(), True),
-        StructField("total_quantity_sold", DoubleType(), True),
-    ])
+    expected_schema = StructType(
+        [
+            StructField("year", IntegerType(), True),
+            StructField("month", IntegerType(), True),
+            StructField("category", StringType(), True),
+            StructField("total_quantity_sold", DoubleType(), True),
+        ]
+    )
     expected_df = spark.createDataFrame(expected_data, expected_schema)
 
     # Prueba
@@ -147,24 +162,39 @@ def test_enrich_data(spark):
     ]
 
     # DataFrames de prueba
-    sales_df = spark.createDataFrame(sales_data, SchemaManager.get_schema("SalesTransactions"))
-    products_df = spark.createDataFrame(products_data, SchemaManager.get_schema("Products"))
+    sales_df = spark.createDataFrame(
+        sales_data, SchemaManager.get_schema("SalesTransactions")
+    )
+    products_df = spark.createDataFrame(
+        products_data, SchemaManager.get_schema("Products")
+    )
     stores_df = spark.createDataFrame(stores_data, SchemaManager.get_schema("Stores"))
 
     # Resultado esperado
     expected_data = [
-        ("T1", "Store A", "Location A", "Product A", "Category A", 10.0, datetime.date(2024, 12, 1), None),
+        (
+            "T1",
+            "Store A",
+            "Location A",
+            "Product A",
+            "Category A",
+            10.0,
+            datetime.date(2024, 12, 1),
+            None,
+        ),
     ]
-    expected_schema = StructType([
-        StructField("transaction_id", StringType(), True),
-        StructField("store_name", StringType(), True),
-        StructField("location", StringType(), True),
-        StructField("product_name", StringType(), True),
-        StructField("category", StringType(), True),
-        StructField("quantity", FloatType(), True),
-        StructField("transaction_date", DateType(), True),
-        StructField("price", FloatType(), True),
-    ])
+    expected_schema = StructType(
+        [
+            StructField("transaction_id", StringType(), True),
+            StructField("store_name", StringType(), True),
+            StructField("location", StringType(), True),
+            StructField("product_name", StringType(), True),
+            StructField("category", StringType(), True),
+            StructField("quantity", FloatType(), True),
+            StructField("transaction_date", DateType(), True),
+            StructField("price", FloatType(), True),
+        ]
+    )
     expected_df = spark.createDataFrame(expected_data, expected_schema)
 
     # Prueba

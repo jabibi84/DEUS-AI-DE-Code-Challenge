@@ -1,6 +1,7 @@
 from pyspark import sql
 import sys
 import os
+
 # Add src to the Python path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../src")))
 from pyspark.sql.types import StructType, StructField, StringType, IntegerType, DateType
@@ -90,9 +91,7 @@ def test_standardize_date_format(spark):
     expected_df = spark.createDataFrame(expected_data, expected_schema)
 
     result = standardize_date_format(df, "date").drop("date")
-    result = result.withColumnRenamed(
-        "standardized_date", "date"
-    )
+    result = result.withColumnRenamed("standardized_date", "date")
 
     result = result.withColumn("date", result["date"].cast(StringType()))
 
@@ -101,5 +100,5 @@ def test_standardize_date_format(spark):
         expected_df,
         ignore_row_order=True,
         ignore_column_order=True,
-        ignore_nullable=True
+        ignore_nullable=True,
     )

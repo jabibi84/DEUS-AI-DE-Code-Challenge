@@ -17,11 +17,13 @@ def spark():
 
 def test_check_duplicates(spark):
     # Esquema
-    schema = StructType([
-        StructField("id", StringType(), True),
-        StructField("name", StringType(), True),
-        StructField("age", IntegerType(), True),
-    ])
+    schema = StructType(
+        [
+            StructField("id", StringType(), True),
+            StructField("name", StringType(), True),
+            StructField("age", IntegerType(), True),
+        ]
+    )
 
     # DataFrame de prueba
     data = [
@@ -38,15 +40,21 @@ def test_check_duplicates(spark):
 
     # Verifica duplicados en todas las columnas
     duplicates_all_columns = check_duplicates("TestDF", df)
-    assert duplicates_all_columns == 1, f"Expected 1 duplicate, got {duplicates_all_columns}"
+    assert (
+        duplicates_all_columns == 1
+    ), f"Expected 1 duplicate, got {duplicates_all_columns}"
 
     # Verifica duplicados basados en una columna
     duplicates_column = check_duplicates("TestDF", df, "id")
-    assert duplicates_column == 1, f"Expected 1 duplicate in 'id', got {duplicates_column}"
+    assert (
+        duplicates_column == 1
+    ), f"Expected 1 duplicate in 'id', got {duplicates_column}"
 
     # Verifica que no haya duplicados en una columna sin repetidos
     duplicates_no_column = check_duplicates("TestDF", df, "name")
-    assert duplicates_no_column == 0, f"Expected 0 duplicates in 'name', got {duplicates_no_column}"
+    assert (
+        duplicates_no_column == 0
+    ), f"Expected 0 duplicates in 'name', got {duplicates_no_column}"
 
 
 def test_check_missing_values(spark):
@@ -69,10 +77,12 @@ def test_check_missing_values(spark):
 
 def test_check_data_format(spark):
     # Esquema
-    schema = StructType([
-        StructField("id", StringType(), True),
-        StructField("age", StringType(), True),
-    ])
+    schema = StructType(
+        [
+            StructField("id", StringType(), True),
+            StructField("age", StringType(), True),
+        ]
+    )
 
     # DataFrame de prueba
     data = [("1", "30"), ("2", "not_a_number"), ("3", "45")]
